@@ -40,20 +40,28 @@ wait for replacing:
 <h4 id="格式化输出"><a href="#格式化输出" class="headerlink" title="格式化输出"></a>格式化输出</h4><ol>
 <li><p>Python 3.6 支持了简明的 f 字符串输出，可以支持多行表达式，表达式运算，哈希取值等多种运算。</p>
 <ol>
-<li>直接使用<pre><code class="python">print(&quot;The &#123;add_a&#125; + &#123;add_b&#125; = &#123;add_out&#125;&quot;)
+<li>直接使用</li>
+</ol>
+<pre><code class="python">print(&quot;The &#123;add_a&#125; + &#123;add_b&#125; = &#123;add_out&#125;&quot;)
 </code></pre>
-</li>
-<li>表达式运算<pre><code class="python">bags = 3
+<ol start="2">
+<li>表达式运算</li>
+</ol>
+<pre><code class="python">bags = 3
 apples_in_bag = 12
 print(f&#39;The result of add is &#123;add_a + add_b&#125;&#39;)
 </code></pre>
-</li>
-<li>哈希取值<br>```python<br>user = {‘name’: ‘leafy’, ‘occupation’: ‘student’}</li>
+<ol start="3">
+<li>哈希取值</li>
 </ol>
-<p>  print(f”{user[‘name’]} is a {user[‘occupation’]}”)</p>
-<pre><code> 4. 多行表达式
-```python
-name = &#39;leafy&#39;
+<pre><code class="python">user = &#123;&#39;name&#39;: &#39;leafy&#39;, &#39;occupation&#39;: &#39;student&#39;&#125;
+
+print(f&quot;&#123;user[&#39;name&#39;]&#125; is a &#123;user[&#39;occupation&#39;]&#125;&quot;)
+</code></pre>
+<ol start="4">
+<li>多行表达式</li>
+</ol>
+<pre><code class="python">name = &#39;leafy&#39;
 occupation = &#39;student&#39;
 msg = (
     f&#39;Name: &#123;name&#125;\n&#39;
@@ -63,25 +71,30 @@ msg = (
 print(msg)
 </code></pre>
 <ol start="5">
-<li><p>函数调用</p>
-<pre><code class="python">print(&quot;The &#123;add_a&#125; + &#123;add_b&#125; = &#123;add(add_a, add_b)&#125;&quot;)
-</code></pre>
-</li>
-<li><p>实例对象调用（对象所在类必须定义了表达方法 __repr__ 或 __str__）<br>```python<br>class User:<br> def <strong>init</strong>(self, name, occupation):</p>
-<pre><code> self.name = name
- self.occupation = occupation
-</code></pre>
-<p> def <strong>repr</strong>(self):</p>
-<pre><code> return f&quot;&#123;self.name&#125; is a &#123;self.occupation&#125;&quot;
-</code></pre>
-</li>
+<li>函数调用</li>
 </ol>
-<p>  u = User(‘leafy’, ‘student’)</p>
-<p>  print(f’{u}’)</p>
-<pre><code>7. 格式化字符串
- ```python
- for x in range(0, 20, 2):
-     print(f&#39;&#123;x:02&#125; &#123;x*x:3&#125; &#123;x*x*x:4&#125;&#39;)
+<pre><code class="python"> print(&quot;The &#123;add_a&#125; + &#123;add_b&#125; = &#123;add(add_a, add_b)&#125;&quot;)
+</code></pre>
+<ol start="6">
+<li>实例对象调用（对象所在类必须定义了表达方法 __repr__ 或 __str__）</li>
+</ol>
+<pre><code class="python"> class User:
+     def __init__(self, name, occupation):
+         self.name = name
+         self.occupation = occupation
+
+     def __repr__(self):
+         return f&quot;&#123;self.name&#125; is a &#123;self.occupation&#125;&quot;
+
+ u = User(&#39;leafy&#39;, &#39;student&#39;)
+
+ print(f&#39;&#123;u&#125;&#39;)
+</code></pre>
+<ol start="7">
+<li>格式化字符串</li>
+</ol>
+<pre><code class="python">for x in range(0, 20, 2):
+    print(f&#39;&#123;x:02&#125; &#123;x*x:3&#125; &#123;x*x*x:4&#125;&#39;)
 </code></pre>
 <p>  <img src="/2022/11/25/tricks-in-writing/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_20221125_142605.png" alt="geshihua"></p>
 <pre><code class="python"># hexadecimal
@@ -94,9 +107,18 @@ print(f&quot;&#123;a:o&#125;&quot;)
 print(f&quot;&#123;a:e&#125;&quot;)
 </code></pre>
 <ol start="8">
-<li>右对齐<br>```python<br>s1 = ‘Fnatic’<br>s2 = ‘TPA’<br>s3 = ‘SKT T1’<br>s4 = ‘SSW’</li>
+<li>右对齐</li>
 </ol>
-<p>  print(f’{s1:&gt;6}’)<br>  print(f’{s2:&gt;6}’)<br>  print(f’{s3:&gt;6}’)<br>  print(f’{s4:&gt;6}’)<br>  ```</p>
+<pre><code class="python">s1 = &#39;Fnatic&#39;
+s2 = &#39;TPA&#39;
+s3 = &#39;SKT T1&#39;
+s4 = &#39;SSW&#39;
+
+print(f&#39;&#123;s1:&gt;6&#125;&#39;)
+print(f&#39;&#123;s2:&gt;6&#125;&#39;)
+print(f&#39;&#123;s3:&gt;6&#125;&#39;)
+print(f&#39;&#123;s4:&gt;6&#125;&#39;)
+</code></pre>
 <h4 id="切片拆包"><a href="#切片拆包" class="headerlink" title="切片拆包"></a>切片拆包</h4><p>例子来自 Fluent Python (“Fluent Python by Luciano Ramalho (O’Reilly). Copyright 2015 Luciano Ramalho, 978-1-491- 94600-8.”)<br><img src="/2022/11/25/tricks-in-writing/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE_20221125_143146.png" alt="slice"></p>
 </li>
 </ol>
