@@ -1,0 +1,30 @@
+<!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>leafy's blog</title><meta name="description" content="The instinct of a man is to pursue everything that flies from him, and to fly from all that pursue him."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">leafy's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><span>Tags · Assignment</span></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="clip_image002.gif" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2022/12/06/DIPAssignment/"><img class="post-cover-img js-img-fadeIn" src="clip_image002.gif" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Assignment"><i class="tag post-item-tag">Assignment</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2022/12/06/DIPAssignment/">数字图像处理大作业2——空间滤波（待续）</a></h2><time class="has-text-grey" datetime="2022-12-06T06:55:38.000Z">2022-12-06</time><p class="is-flex-grow-2 mt-2">a)  噪声定义文件 noise.py
+
+
+ __all__定义将定义的所有类，从而更好的供后续使用，定义噪声基类与虚函数。
+
+
+这里本来想用 python 3.8 提供的 @singledispatchmethod 装饰器，在抽象基类里定义两个虚函数，然后在继承的时候重载函数及调用方式，但是发现如果是继承的类好像不能直接继承（？）因为会报没有这个方法的错，只能把 @singledispatchmethod 写在类内部？不知道能否有人解答我的疑惑。
+
+
+
+定义均匀噪声类，使用numpy.random.rand生成0，1之间的均匀噪声，同时利用平移和放缩的到任意范围的均匀噪声。
+
+由于前面定义的的是抽象类，因此后面继承的时候需要同时继承 ABC 抽象类。
+
+感觉这里写的有些问题，可能应该写成
+class No..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2022/12/06/DIPAssignment/">Read more</a></section></article></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><div style="position: sticky; top: 50px;"><main class="aside-card-container tag-widget is-in-tag-page"><h3>Tags</h3><section><a href="/tags/Assignment"><span class="tag post-item-tag" style="margin-bottom: 5px;">Assignment</span></a><a href="/tags/%E5%8D%9A%E5%AE%A2%E6%9E%84%E5%BB%BA"><span class="tag post-item-tag" style="margin-bottom: 5px;">博客构建</span></a></section></main></div></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/leafy-lee"><i class="iconfont icon-github-fill"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--><!-- Google Scholars--><a title="Google Scholar" target="_blank" rel="noopener nofollow" href="//scholar.google.com/citations?user=oYrdW8UAAAAJ&amp;hl=zh-CN&amp;oi=ao"><i class="iconfont icon-graduatecap"></i></a></section><p><span>Copyright ©</span><span> leafy 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>
