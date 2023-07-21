@@ -1,0 +1,147 @@
+<!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>服务器相关</title><meta name="description" content="The instinct of a man is to pursue everything that flies from him, and to fly from all that pursue him."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><link rel="stylesheet" href="/style/common/jquery.fancybox.min.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="关于配置最近经常有迁移服务器的需求，但是又嫌弃每次配置比较麻烦，就把配置存在了本地，使用脚本统一配置。
+PowerShell Scripting开始的想法是写 PowerShell Scripting，就了解了一下在编写PowerShell脚本，在PowerShell脚本中，可以使用 *param *声明参数，如下：
+param($args1, $args2, $args3=default)
+
+一旦使用这样的方式，所有的参数都必须声明在这参数组里。
+但是问题是 Windows 里面没有 ssh-copy-id 这个函数，只能自己定义：
+# copyid.ps1
+function ssh-copy-id([string]$userAtMachine, $args)&amp;#123;   
+    $publicKe.."><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">leafy's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">服务器相关</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E9%85%8D%E7%BD%AE"><span class="toc-text">关于配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PowerShell-Scripting"><span class="toc-text">PowerShell Scripting</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Python-%E8%84%9A%E6%9C%AC"><span class="toc-text">Python 脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="toc-text">服务器文件传输</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%96%87%E4%BB%B6%E6%89%A7%E8%A1%8C"><span class="toc-text">服务器文件执行</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%98%BE%E7%A4%BAGit%E5%88%86%E6%94%AF"><span class="toc-text">显示Git分支</span></a></li></ol></li></ol></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Interesting%20things"><i class="tag post-item-tag">Interesting things</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">服务器相关</h1><time class="has-text-grey" datetime="2023-06-01T09:28:42.000Z">2023-06-01</time><article class="mt-2 post-content"><h2 id="关于配置"><a href="#关于配置" class="headerlink" title="关于配置"></a>关于配置</h2><p>最近经常有迁移服务器的需求，但是又嫌弃每次配置比较麻烦，就把配置存在了本地，使用脚本统一配置。</p>
+<h4 id="PowerShell-Scripting"><a href="#PowerShell-Scripting" class="headerlink" title="PowerShell Scripting"></a>PowerShell Scripting</h4><p>开始的想法是写 PowerShell Scripting，就了解了一下在编写PowerShell脚本，在PowerShell脚本中，可以使用 *param *声明参数，如下：</p>
+<pre><code class="powershell">param($args1, $args2, $args3=default)
+</code></pre>
+<p>一旦使用这样的方式，所有的参数都必须声明在这参数组里。</p>
+<p>但是问题是 Windows 里面没有 ssh-copy-id 这个函数，只能自己定义：</p>
+<pre><code class="powershell"># copyid.ps1
+function ssh-copy-id([string]$userAtMachine, $args)&#123;   
+    $publicKey = &quot;$ENV:USERPROFILE&quot; + &quot;/.ssh/id_rsa.pub&quot;
+    if (!(Test-Path &quot;$publicKey&quot;))&#123;
+        Write-Error &quot;ERROR: failed to open ID file &#39;$publicKey&#39;: No such file&quot;            
+    &#125;
+    else &#123;
+        # Write-Output $userAtMachine
+        &amp; cat &quot;$publicKey&quot; | ssh $args $userAtMachine -tt &quot;umask 077; test -d .ssh || mkdir .ssh ; cat &gt;&gt; .ssh/authorized_keys || exit 1&quot;      
+    &#125;
+&#125;
+
+ssh-copy-id $args[0]
+</code></pre>
+<h4 id="Python-脚本"><a href="#Python-脚本" class="headerlink" title="Python 脚本"></a>Python 脚本</h4><h5 id="服务器文件传输"><a href="#服务器文件传输" class="headerlink" title="服务器文件传输"></a>服务器文件传输</h5><p>首先是处理 config 文件以及通过 os.system 将需要的内容传到服务器上</p>
+<pre><code class="python"># settmux.py: python settmux.py abbr addr [port]
+import sys
+import os
+from subprocess import call
+import paramiko, time
+import platform
+
+os.system(&#39;cp /mnt/c/Users/China/.ssh/config /root/.ssh/&#39;)
+print(&quot;[INFO]: Moving config in to /root/.ssh/&quot;)
+
+# Args processing
+username = &quot;name&quot;
+args = sys.argv
+print(f&quot;[INFO]: Getting &#123;len(args)&#125; args: &#123;args&#125;&quot;)
+if len(args) == 3:
+    port = &quot;22&quot;
+    _, abbr, addr = args
+else:
+    _, abbr, addr, port = args
+
+# Get config file and processing
+with open(&quot;/root/.ssh/config&quot;, &#39;r&#39;) as f:
+    OCCUPIED = False
+    context = f.read()
+    context = context.split(&quot;\n&quot;)
+with open(&quot;/root/.ssh/config&quot;, &#39;a&#39;) as f:
+    for line in context:
+        line = line.split(&quot;#&quot;)[0].strip()
+        if line == &quot;&quot;:
+            continue
+        kind = line.split(&quot; &quot;)[0]
+        if kind == &#39;HostName&#39;:
+            config_addr = line.split(&quot; &quot;)[1]
+            if addr == config_addr:
+                print(&quot;[INFO]: Already have config&quot;)
+                OCCUPIED = True
+    if not OCCUPIED:
+        f.write(f&quot;\n\nHost &#123;abbr&#125;\n  HostName &#123;addr&#125;\n  Port &#123;port&#125;\n  User &#123;username&#125;&quot;)
+
+# Using platform to check the platform
+if platform.system().lower() == &#39;windows&#39;:
+    os.system(f&quot;.\ssh-copy-id &#123;abbr&#125;&quot;)
+elif platform.system().lower() == &#39;linux&#39;:
+    os.system(f&quot;ssh-copy-id -i /mnt/c/Users/China/.ssh/id_rsa.pub &#123;abbr&#125;&quot;)
+# SCP all the needed files
+os.system(f&quot;scp -r ./serverconfig/.tmux/ &#123;username&#125;@&#123;abbr&#125;:~/.tmux&quot;)
+os.system(f&quot;scp ./serverconfig/.bashrc &#123;username&#125;@&#123;abbr&#125;:~/&quot;)
+os.system(f&quot;scp ./serverconfig/.tmux.conf &#123;username&#125;@&#123;abbr&#125;:~/&quot;)
+</code></pre>
+<p>首先处理参数，然后根据 config 文件获得内容，注意，（就目前我的知识水平而言）在打开文件的时候无法同时进入可读之前内容与可添加的模式，虽然存在”a+”的扩展模式，但由于”a”模式下光标将位于文件末尾，因此需要打开两次。</p>
+<p>通过在不同平台下的判断将 <em>id_rsa.pub</em> 上传到服务器之后就可以通过 Host 免密登陆了。</p>
+<h5 id="服务器文件执行"><a href="#服务器文件执行" class="headerlink" title="服务器文件执行"></a>服务器文件执行</h5><p>然后是在本地执行服务器端的配置文件生效的操作。这里我了解到paramiko库，所以使用了一下</p>
+<pre><code class="python">import sys
+import os
+from subprocess import call
+import paramiko, time
+from collections import defaultdict
+
+# Reading configs
+with open(&quot;/root/.ssh/config&quot;, &#39;r&#39;) as f:
+    OCCUPIED = False
+    context = f.read()
+    context = context.split(&quot;\n&quot;)
+config = defaultdict(dict)
+for line in context:
+    line = line.split(&quot;#&quot;)[0].strip()
+    if line == &quot;&quot;:
+        continue
+    kind = line.split(&quot; &quot;)[0]
+    if kind == &#39;Host&#39;:
+        temp_name = line.split(&quot; &quot;)[1]
+    elif kind == &#39;Port&#39;:
+        config[temp_name][&#39;port&#39;] = line.split(&quot; &quot;)[1]
+    elif &#39;jump&#39; in temp_name:
+        continue
+    elif kind == &#39;HostName&#39;:
+        config[temp_name][&#39;hostname&#39;] = line.split(&quot; &quot;)[1]
+    elif kind == &#39;User&#39;:
+        config[temp_name][&#39;user&#39;] = line.split(&quot; &quot;)[1]
+    else:
+        print(&quot;[INFO]: Not known args&quot;)
+print(f&quot;[INFO]: CONFIG is&quot;)
+for conf in config:
+    print(conf, config[conf])
+username = &quot;name&quot;
+abbr = sys.argv[1]
+addr = config[abbr][&#39;hostname&#39;]
+port = config[abbr][&#39;port&#39;] if &#39;port&#39; in config[abbr] else &#39;22&#39;
+
+# Using the private key to log in without a password
+pkey=&#39;/root/.ssh/id_rsa&#39;
+key=paramiko.RSAKey.from_private_key_file(pkey)
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect(addr, port, username, pkey=key)
+
+# Setting tmux config
+stdin, stdout, stderr = ssh.exec_command(&#39;tmux new -s Tiberius&#39;)
+stdin, stdout, stderr = ssh.exec_command(&#39;tmux source-file ~/.tmux.conf&#39;)
+out = stdout.read().decode(&#39;utf8&#39;)
+err = stderr.read().decode(&#39;utf8&#39;)
+result = [out, err]
+print(f&quot;[INFO]: result of command &#123;result&#125;&quot;) 
+
+# Downloading Anaconda
+stdin, stdout, stderr = ssh.exec_command(&#39;wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-5.3.1-Linux-x86_64.sh&#39;)
+out = stdout.read().decode(&#39;utf8&#39;)
+err = stderr.read().decode(&#39;utf8&#39;)
+result = [out, err]
+print(f&quot;[INFO]: result of command &#123;result&#125;&quot;) 
+
+ssh.close()
+</code></pre>
+<p>通过私钥配置免密登录，配置后设置tmux的操作以及下载anaconda，随后只需要scp将环境传输到新的anaconda上即可。</p>
+<h4 id="显示Git分支"><a href="#显示Git分支" class="headerlink" title="显示Git分支"></a>显示Git分支</h4><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/133291342">如何在Linux下显示当前git分支 - 知乎 (zhihu.com)</a></p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2023/07/21/Baseline%E9%98%85%E8%AF%BB%E4%B8%8E%E4%BF%AE%E6%94%B9/" title="Baseline阅读与修改"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">Previous: Baseline阅读与修改</span></a><a class="button is-default" href="/2023/03/28/%E4%BA%A4%E5%8F%89%E7%86%B5%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E5%92%8CKL%E6%95%A3%E5%BA%A6/" title="交叉熵损失函数和KL散度"><span class="has-text-weight-semibold">Next: 交叉熵损失函数和KL散度</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="leafy-lee/leafy-lee.github.io" src="https://utteranc.es/client.js" label="Comment" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/leafy-lee"><i class="iconfont icon-github-fill"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--><!-- Google Scholars--><a title="Google Scholar" target="_blank" rel="noopener nofollow" href="//scholar.google.com/citations?user=oYrdW8UAAAAJ&amp;hl=zh-CN&amp;oi=ao"><i class="iconfont icon-graduatecap"></i></a></section><p><span>Copyright ©</span><span> leafy 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/jquery-3.6.1.min.js"></script><script src="/js/jquery-fancybox.min.js"></script><script src="/js/img_zoom.js"></script><script src="/js/post.js"></script></body></html>

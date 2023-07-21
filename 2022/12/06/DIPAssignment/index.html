@@ -1,0 +1,734 @@
+<!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>数字图像处理大作业2——空间滤波</title><meta name="description" content="The instinct of a man is to pursue everything that flies from him, and to fly from all that pursue him."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><link rel="stylesheet" href="/style/common/jquery.fancybox.min.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="a)  噪声定义文件 noise.pyfrom abc import ABC
+from typing import Tuple
+import numpy as np
+from functools import singledispatchmethod
+import cv2
+# from IPython import embed
+
+# from numpy.typing import ArrayLike
+
+__all__ = [
+    &amp;quot;NoiseGenerator&amp;quot;,
+    &amp;quot;UniformNoiseGenerator&amp;quot;,
+    &amp;quot;NormalNoiseGenerator&amp;quot;,
+    &amp;quot;GaussianNoiseGenerator&amp;.."><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">leafy's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">数字图像处理大作业2——空间滤波</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#a-%E5%99%AA%E5%A3%B0%E5%AE%9A%E4%B9%89%E6%96%87%E4%BB%B6-noise-py"><span class="toc-text">a)  噪声定义文件 noise.py</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#b-%E7%A9%BA%E9%97%B4%E6%BB%A4%E6%B3%A2%E5%99%A8%E5%AE%9A%E4%B9%89%E6%96%87%E4%BB%B6-spatial-filter-py"><span class="toc-text">b)  空间滤波器定义文件 spatial_filter.py</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#c-%E6%B5%8B%E9%87%8F%E6%8C%87%E6%A0%87%E6%96%87%E4%BB%B6-metric-py"><span class="toc-text">c)    测量指标文件 metric.py</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#d-%E4%B8%BB%E6%96%87%E4%BB%B6%EF%BC%88%E4%BA%94%E4%B8%AA%E5%87%BD%E6%95%B0%E5%8F%8A%E4%B8%BB%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%EF%BC%89"><span class="toc-text">d)    主文件（五个函数及主函数调用）</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Assignment"><i class="tag post-item-tag">Assignment</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">数字图像处理大作业2——空间滤波</h1><time class="has-text-grey" datetime="2022-12-06T06:55:38.000Z">2022-12-06</time><article class="mt-2 post-content"><h2 id="a-噪声定义文件-noise-py"><a href="#a-噪声定义文件-noise-py" class="headerlink" title="a)  噪声定义文件 noise.py"></a>a)  噪声定义文件 noise.py</h2><pre><code class="python">from abc import ABC
+from typing import Tuple
+import numpy as np
+from functools import singledispatchmethod
+import cv2
+# from IPython import embed
+
+# from numpy.typing import ArrayLike
+
+__all__ = [
+    &quot;NoiseGenerator&quot;,
+    &quot;UniformNoiseGenerator&quot;,
+    &quot;NormalNoiseGenerator&quot;,
+    &quot;GaussianNoiseGenerator&quot;,
+    &quot;SaltPepperNoiseGenerator&quot;,
+]
+
+
+class NoiseGenerator:
+    &quot;&quot;&quot;The base distribution (without uniform noise).&quot;&quot;&quot;
+    __slots__ = []
+
+    def __init__(self):
+        pass
+
+    @singledispatchmethod
+    def generate_noise(self):
+        &quot;&quot;&quot;Generating noise which should be implemented&quot;&quot;&quot;
+        raise NotImplementedError
+
+    def add_noise(self, image: np.ndarray) -&gt; np.ndarray:
+        &quot;&quot;&quot;Adding noise to image&quot;&quot;&quot;
+        image_shape = image.shape
+        return image + self.generate_noise(image_shape=image_shape)
+</code></pre>
+<ol>
+<li> __all__定义将定义的所有类，从而更好的供后续使用，定义噪声基类与虚函数。</li>
+</ol>
+<ul>
+<li>这里本来想用 python 3.8 提供的 @singledispatchmethod 装饰器，在抽象基类里定义两个虚函数，然后在继承的时候重载函数及调用方式，但是发现如果是继承的类好像不能直接继承（？）因为会报没有这个方法的错，只能把 @singledispatchmethod 写在类内部？不知道能否有人解答我的疑惑。</li>
+</ul>
+<pre><code class="python">class UniformNoiseGenerator(NoiseGenerator, ABC):
+    &quot;&quot;&quot;The base distribution with uniform noise.&quot;&quot;&quot;
+    __slots__ = [&#39;min_val&#39;, &#39;max_val&#39;]
+
+    def __init__(self, min_val: float = 0, max_val: float = 1):
+        super(UniformNoiseGenerator, self).__init__()
+        self.min_val = min_val
+        self.max_val = max_val
+
+    def generate_uniform_noise(self,
+                               min_val: float = 0,
+                               max_val: float = 1,
+                               image_shape: Tuple[int, int] = None) -&gt; np.ndarray:
+        &quot;&quot;&quot;Generating noise
+        :param:     image_shape:        Image shape of generated noise
+        :return:    output_noise:       ArrayLike noise or single noise
+        &quot;&quot;&quot;
+        if min_val is None and max_val is None:
+            min_val = self.min_val
+            max_val = self.max_val
+        assert (min_val &lt; max_val)  # assertion
+        distribution_range = max_val - min_val  # getting range of Uniform(0, b - a)
+        moving_factor = distribution_range - max_val  # getting move of Uniform(a, b) from Uniform(0, b - a)
+
+        if image_shape is None:  # just generate one noise
+            return np.random.rand() * distribution_range - moving_factor
+        return np.random.rand(*image_shape) * distribution_range - moving_factor  # ArrayLike output
+
+    def add_noise(self, image: np.ndarray) -&gt; np.ndarray:
+        &quot;&quot;&quot;Adding noise to image&quot;&quot;&quot;
+        image_shape = image.shape
+        return image + self.generate_uniform_noise(image_shape=image_shape)
+</code></pre>
+<ol start="2">
+<li><p>定义均匀噪声类，使用numpy.random.rand生成0，1之间的均匀噪声，同时利用平移和放缩的到任意范围的均匀噪声。</p>
+<ul>
+<li><p>由于前面定义的的是抽象类，因此后面继承的时候需要同时继承 ABC 抽象类。</p>
+</li>
+<li><p>感觉这里写的有些问题，可能应该写成</p>
+<pre><code class="python">class Noise(abc.ABCMeta):
+    @abc.abstractmethod  
+    def read(self):
+        pass
+</code></pre>
+<p>不太确定。</p>
+</li>
+<li><p>用__slots__减少类初始化和定义时的时间消耗。</p>
+</li>
+<li><p>numpy.random.rand(*image_shape) 时利用了拆包，类似于 *args 的用法</p>
+</li>
+</ul>
+</li>
+</ol>
+<pre><code class="python">class NormalNoiseGenerator(UniformNoiseGenerator, ABC):
+    &quot;&quot;&quot;The base distribution with additive i.i.d. uniform noise.&quot;&quot;&quot;
+
+    def __init__(self):
+        super(NormalNoiseGenerator, self).__init__()
+
+    def generate_normal_noise(self, image_shape: Tuple[int, int]) -&gt; np.ndarray:
+        &quot;&quot;&quot;Generating Normal noise&quot;&quot;&quot;
+        uniform_noise_1 = self.generate_uniform_noise(0, 1, image_shape)
+        uniform_noise_2 = self.generate_uniform_noise(0, 1, image_shape)
+        normal_noise = np.cos(2.0 * np.pi * uniform_noise_1) * np.sqrt(-2.0 * np.log(uniform_noise_2))
+        return normal_noise
+
+    def add_noise(self, image: np.ndarray) -&gt; np.ndarray:
+        &quot;&quot;&quot;Adding noise to image&quot;&quot;&quot;
+        image_shape = image.shape
+        return image + self.generate_normal_noise(image_shape=image_shape)
+</code></pre>
+<ol start="3">
+<li>继承均匀噪声类，使用 Box-Muller 变换得到标准正态分布的噪声。<ul>
+<li> Box-Muller 的核心就是通过极坐标变换将正态分布的指数变换为极坐标的辐角的均匀分布。</li>
+</ul>
+</li>
+</ol>
+<pre><code class="python">class GaussianNoiseGenerator(NormalNoiseGenerator, ABC):
+    &quot;&quot;&quot;Gaussian distribution with reparameterization trick.&quot;&quot;&quot;
+
+    def __init__(self):
+        super(GaussianNoiseGenerator, self).__init__()
+
+    def generate_gaussian_noise(self, image_shape: Tuple[int, int], mean: float = 0, var: float = 1) -&gt; np.ndarray:
+        &quot;&quot;&quot;
+        Generating Normal noise
+        :param      image_shape:        Shape of input image
+        :param      mean:               Mean of gaussian
+        :param      var:                Variance of gaussian
+        :return:    gaussian_noise:     Output noise with same size
+        &quot;&quot;&quot;
+        normal_noise = self.generate_normal_noise(image_shape)
+        gaussian_noise = normal_noise * np.sqrt(var) + mean
+        return gaussian_noise
+
+    def add_all_channel_noise(self, image: np.ndarray, mean: float = 0, var: float = 1) -&gt; np.ndarray:
+        &quot;&quot;&quot;Adding gaussian noise to image with SAME noise in each channel
+        :param      image:              input image
+        :param      mean:               Mean of gaussian
+        :param      var:                Variance of gaussian
+        :return:    output_img:         Output image with same size adding gaussian noise
+        &quot;&quot;&quot;
+        image_shape = image.shape
+        input_img = image / 255
+        gaussian_noise = np.expand_dims(self.generate_gaussian_noise(image_shape[:2], mean, var), -1)
+        gaussian_noise = gaussian_noise.repeat(3, axis=-1)
+        output_img = input_img + gaussian_noise
+        output_img[input_img &gt; 1] = 1
+        output_img[input_img &lt; 0] = 0
+        return output_img * 255
+
+    def add_channel_wise_noise(self, image: np.ndarray, mean: float = 0, var: float = 1) -&gt; np.ndarray:
+        &quot;&quot;&quot;Adding gaussian noise to image with DIFFERENT noise in each channel
+        :param      image:              input image
+        :param      mean:               Mean of gaussian
+        :param      var:                Variance of gaussian
+        :return:    output_img:         Output image with same size adding channel-wise gaussian noise
+        &quot;&quot;&quot;
+        image_shape = image.shape
+        input_img = image / 255
+        gaussian_noise = self.generate_gaussian_noise(image_shape, mean, var)
+        output_img = input_img + gaussian_noise
+        output_img[input_img &gt; 1] = 1
+        output_img[input_img &lt; 0] = 0
+        return output_img * 255
+</code></pre>
+<ol start="4">
+<li><p>通过重参数化技巧(re-parameterization trick)，从标准正态分布噪声生成带有均值和方差的高斯噪声分布。同时设置两种加噪声方式：分通道添加或整体添加。</p>
+<ul>
+<li><p><strong>注意</strong>，这里如果想直接使用 cv2 或其他方式直接可视化，有两种方式，</p>
+<ul>
+<li><p>一种是除 255 变换到 [0, 1] 之间，</p>
+</li>
+<li><p>第二种是通过 uint8 的方式转化为整值。</p>
+<p>如果直接可视化的话，会产生过亮的情况，因为会自动判定为 0-1 从而被 clip 成高亮图像。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<pre><code class="python">class SaltPepperNoiseGenerator(UniformNoiseGenerator, ABC):
+    &quot;&quot;&quot;Gaussian distribution with additive i.i.d. uniform noise.&quot;&quot;&quot;
+
+    def __init__(self):
+        super(SaltPepperNoiseGenerator, self).__init__()
+
+    def generate_saltpepper_noise(self, image_shape: Tuple[int, int]) -&gt; np.ndarray:
+        &quot;&quot;&quot;
+        :param:     prob_1:             Probability of &quot;Salt&quot; noise.
+        :param:     prob_2:             Probability of &quot;Pepper&quot; noise.
+        :param:     image_shape:        Shape of input image.
+        :return:    saltpepper_noise:   ArrayLike output salt pepper noise.
+        &quot;&quot;&quot;
+        uniform_noise = self.generate_uniform_noise(0, 1, image_shape)
+        saltpepper_noise = uniform_noise.copy()
+        return saltpepper_noise
+
+    def add_saltpepper_noise(self, prob_1: float, prob_2: float, image: np.ndarray) -&gt; np.ndarray:
+        &quot;&quot;&quot;Adding noise to image&quot;&quot;&quot;
+        output_img = image.copy()
+        image_shape = image.shape
+        saltpepper_noise = self.generate_saltpepper_noise(image_shape[:2])
+        output_img[saltpepper_noise &gt; 1 - prob_1] = 255
+        output_img[saltpepper_noise &lt; prob_2] = 0
+        return output_img
+</code></pre>
+<ol start="5">
+<li>继承均匀噪声类，生成均匀噪声，根据均匀噪声的值确定为原始图、胡椒噪声或原始噪声。</li>
+</ol>
+<pre><code class="python">if __name__ == &#39;__main__&#39;:
+    uniform_noise_generator = UniformNoiseGenerator()
+    print(uniform_noise_generator.generate_uniform_noise(2, 4, (2, 3)),
+          uniform_noise_generator.generate_uniform_noise())
+    normal_noise_generator = NormalNoiseGenerator()
+    print(normal_noise_generator.generate_normal_noise((2, 3)))
+    gaussian_noise_generator = GaussianNoiseGenerator()
+    print(gaussian_noise_generator.generate_gaussian_noise((2, 3)))
+    input_image = cv2.imread(&#39;./test_image/test3.jpg&#39;, 1)
+    print(type(input_image))
+    cv2.namedWindow(&#39;input_image&#39;, cv2.WINDOW_AUTOSIZE)
+    cv2.imshow(&#39;input_image&#39;, input_image)
+    # saltpepper_noise_generator = SaltPepperNoiseGenerator()
+    # tar = saltpepper_noise_generator.add_saltpepper_noise(0.12, 0.1, input_image)
+    # cv2.imshow(&#39;saltpepper_noise&#39;, tar)
+    gaussian_noise_generator = GaussianNoiseGenerator()
+    tar2 = gaussian_noise_generator.add_all_channel_noise(input_image, 0, 0.05)
+    tar2_channel_wise = gaussian_noise_generator.add_channel_wise_noise(input_image, 0, 0.05)
+    cv2.imshow(&#39;gaussian_noise&#39;, tar2)
+    cv2.imshow(&#39;gaussian_noise_channel&#39;, tar2_channel_wise)
+    cv2.waitKey(0)
+</code></pre>
+<h2 id="b-空间滤波器定义文件-spatial-filter-py"><a href="#b-空间滤波器定义文件-spatial-filter-py" class="headerlink" title="b)  空间滤波器定义文件 spatial_filter.py"></a>b)  空间滤波器定义文件 spatial_filter.py</h2><pre><code class="python">from typing import Tuple, List, Optional
+import numpy as np
+import logging
+import sys
+import functools
+import cv2
+from IPython import embed
+
+level = logging.DEBUG
+fmt = &quot;[%(levelname)s] %(asctime)s - %(message)s&quot;
+logging.basicConfig(level=level, format=fmt)
+
+
+def get_median(noised_image: np.ndarray, x_min: int, x_max: int, y_min: int, y_max: int, c: int) -&gt; float:
+    median_area = noised_image[x_min:x_max + 1, y_min:y_max + 1, c].flatten()
+    sorted_area = sorted(median_area)
+    n = len(median_area)
+    median = sorted_area[n // 2 + 1] if n % 2 else (sorted_area[n // 2] + sorted_area[n // 2 + 1]) / 2
+    return median
+
+
+def get_adaptive_median(noised_image: np.ndarray, x: int, y: int, h: int, w: int, c: int,
+                        max_size: int = None) -&gt; float:
+    median_area = noised_image[max(0, x - h):x + h + 1, max(0, y - w):y + w + 1, c].flatten()
+    max_val, min_val = np.max(median_area), np.min(median_area)
+    sorted_area = sorted(median_area)
+    n = len(median_area)
+    median = sorted_area[n // 2 + 1] if n % 2 else (int(sorted_area[n // 2]) + int(sorted_area[n // 2 + 1])) // 2
+    if min_val &lt; median &lt; max_val:
+        return noised_image[x][y][c] if min_val &lt; noised_image[x][y][c] &lt; max_val else median
+    elif h &lt; max_size and w &lt; max_size:
+        return get_adaptive_median(noised_image, x, y, h + 1, w + 1, c, max_size)
+    else:
+        return noised_image[x][y][c] if min_val &lt; noised_image[x][y][c] &lt; max_val else median
+
+
+def get_mean(noised_image: np.ndarray, x_min: int, x_max: int, y_min: int, y_max: int) -&gt; np.ndarray:
+    return np.mean(noised_image[x_min:x_max + 1, y_min:y_max + 1], axis=(0, 1))
+</code></pre>
+<ol>
+<li>定义静态函数，完成计算规定kernel内的均值，中值与自适应中值。<ul>
+<li>我有一个坏习惯，经常使用 print debug（虽然我现在还是这样），但我尝试使用 log 来输出。</li>
+</ul>
+</li>
+</ol>
+<pre><code class="python">class SpatialFilter:
+    &quot;&quot;&quot;
+    This is description which will be showed
+    The Class of Padding Adder
+    &quot;&quot;&quot;
+    instance = None                                 # There should be ONLY ONE Spatial Filter once
+    __slots__ = [&#39;noised_image&#39;, &#39;kernel_size&#39;]
+
+    def __new__(cls, *args):
+        if cls.instance is None:  # Once no adder exists
+            cls.instance = super().__new__(cls)
+        return cls.instance
+
+    def __init__(self, noised_image: np.ndarray, kernel_size: int = 3):
+        self.noised_image = noised_image
+        self.kernel_size = kernel_size
+
+    def reverse_image(self, image: np.ndarray, reflect_size: int = None, axis: int = 0) -&gt; np.ndarray:
+        &quot;&quot;&quot;
+        reverse image in one axis for reflect padding
+        :param:     image:          Input image for reflection
+        :param:     reflect_size:   The size of reflect area edge + 1
+        :param:     axis:           The axis that will be reflected
+        :return:    reversed_img:   Reversed image at axis
+        &quot;&quot;&quot;
+        if reflect_size is None:
+            reflect_size = self.kernel_size
+            logging.info(f&quot;No kernel size input, automatically use size = &#123;self.kernel_size&#125;&quot;)
+        if axis == 0:
+            reflect_area_left = image[reflect_size - 1::-1]
+            reflect_area_right = image[-1 * reflect_size:][::-1]
+        else:
+            reflect_area_left = image[:, reflect_size - 1::-1]
+            reflect_area_right = image[:, -1 * reflect_size:][:, ::-1]
+        reversed_img = np.concatenate([reflect_area_left, image, reflect_area_right], axis=axis)
+        return reversed_img
+
+    def add_reflect_padding(self, image: np.ndarray, kernel_size: int = None) -&gt; np.ndarray:
+        &quot;&quot;&quot;
+        Adding reflect padding
+        :param:     image:          Input image for reflection
+        :param:     kernel_size:    The size of reflect kernel
+        :return:    reversed_img:   Padded image.
+        &quot;&quot;&quot;
+        if kernel_size is None:
+            kernel_size = self.kernel_size
+            logging.info(f&quot;No kernel size input, automatically use size = &#123;self.kernel_size&#125;&quot;)
+        horizontal_flip = self.reverse_image(image, kernel_size, 0)
+        reversed_img = self.reverse_image(horizontal_flip, kernel_size, 1)
+        return reversed_img
+
+    def add_zero_padding(self, image: np.ndarray, kernel_size: int = None):
+        &quot;&quot;&quot;
+        Adding zero padding
+        :param:     image:          Input image for padding
+        :param:     kernel_size:    The size of padding kernel
+        :return:    output_img:     Padded image.
+        &quot;&quot;&quot;
+        if kernel_size is None:
+            kernel_size = self.kernel_size
+            logging.info(f&quot;No kernel size input, automatically use size = &#123;self.kernel_size&#125;&quot;)
+        if len(image.shape) &gt; 2:
+            h, w, c = image.shape
+            output_img = np.zeros((h + 2 * kernel_size, w + 2 * kernel_size, c))
+        else:
+            h, w = image.shape
+            output_img = np.zeros((h + 2 * kernel_size, w + 2 * kernel_size))
+        output_img[kernel_size:h + kernel_size, kernel_size:w + kernel_size] = image
+        return output_img
+</code></pre>
+<ol start="2">
+<li><p>定义Spatial Filter类，同时，由于防止复用时覆盖掉特性，以及在要求的三个函数中不必每次初始化类，因此重载__new__函数，保证只需要使用同一个Spatial Filter，同时实现将图像翻转的功能，供后续对称padding使用。</p>
+</li>
+<li><p>定义两种padding方式，对称填充和零填充。</p>
+</li>
+<li><p>对输入参数做预处理，填充未给出的值。</p>
+<ul>
+<li>（主要是 pycharm 提示，duplicate too long）所以我就写进一个函数了。</li>
+</ul>
+</li>
+</ol>
+<pre><code class="python">    def _preprocess_args(self,
+                         noised_image: np.ndarray = None,
+                         kernel_size: int = None,
+                         padding_func: Optional = None,
+                         padding_type: str = None,
+                         max_size: int = None):
+        assert (padding_type is None or padding_func is None)
+        assert (kernel_size % 2)
+        if noised_image is None:
+            noised_image = self.noised_image
+        if kernel_size is None:
+            kernel_size = self.kernel_size
+        if max_size is None:
+            max_size = self.kernel_size + 4
+        if padding_func is not None:
+            padded_image = padding_func(noised_image, (kernel_size - 1) // 2)
+        elif padding_type is not None:
+            padding_func = getattr(sys.modules[__name__].SpatialFilter, &quot;add_%s_padding&quot; % padding_type)
+            padded_image = padding_func(self, noised_image, (kernel_size - 1) // 2)
+        else:
+            padded_image = self.add_zero_padding(noised_image, (kernel_size - 1) // 2)
+        depth = (kernel_size - 1) // 2
+        c_img = 1
+        if len(padded_image.shape) &gt; 2:
+            h_img, w_img, c_img = noised_image.shape
+        else:
+            h_img, w_img = noised_image.shape
+        output_img = padded_image.copy()
+        return noised_image, padded_image, kernel_size, padding_func, max_size, depth, h_img, w_img, c_img, output_img
+</code></pre>
+<ol start="5">
+<li>实现中值滤波与均值滤波。</li>
+</ol>
+<pre><code class="python">   def mean_filter(self,
+                    noised_image: np.ndarray = None,
+                    kernel_size: int = None,
+                    padding_func: Optional = None,
+                    padding_type: str = None):
+        &quot;&quot;&quot;
+        Mean filter
+        Support two type of padding:
+            1. define it yourself and put it with padding_func
+            2. use the predefined type
+        :param:     noised_image:   Input image for padding
+        :param:     kernel_size:    The size of padding kernel
+        :param:     padding_func:   Padding function defined by yourself
+        :param:     padding_type:   Type of padding, use in [&quot;reflect&quot;, &quot;zero&quot;]
+        :return:    output_img:     Output image after filter
+        &quot;&quot;&quot;
+        noised_image, padded_image, kernel_size, padding_func,  _, depth, h_img, w_img, c_img, output_img = \
+            self._preprocess_args(noised_image, kernel_size, padding_func, padding_type)
+        for h in range(depth, h_img + depth):
+            for w in range(depth, w_img + depth):
+                output_img[h, w, :] = get_mean(padded_image, h - depth, h + depth, w - depth, w + depth)
+        output_img = output_img[depth:h_img + depth, depth:w_img + depth]
+        return np.uint8(output_img)
+
+    def median_filter(self,
+                      noised_image: np.ndarray = None,
+                      kernel_size: int = None,
+                      padding_func: Optional = None,
+                      padding_type: str = None):
+        noised_image, padded_image, kernel_size, padding_func, _, depth, h_img, w_img, c_img, output_img = \
+            self._preprocess_args(noised_image, kernel_size, padding_func, padding_type)
+        for h in range(depth, h_img + depth):
+            for w in range(depth, w_img + depth):
+                for c in range(c_img):
+                    output_img[h, w, c] = get_median(padded_image, h - depth, h + depth, w - depth, w + depth, c)
+        output_img = output_img[depth:h_img + depth, depth:w_img + depth]
+        return np.uint8(output_img)
+
+    def adaptive_median_filter(self,
+                               noised_image: np.ndarray = None,
+                               kernel_size: int = None,
+                               max_size: int = None,
+                               padding_func: Optional = None,
+                               padding_type: str = None):
+        noised_image, padded_image, kernel_size, padding_func, _, depth, h_img, w_img, c_img, output_img = \
+            self._preprocess_args(noised_image, kernel_size, padding_func, padding_type)
+        for h in range(depth, h_img + depth):
+            for w in range(depth, w_img + depth):
+                for c in range(c_img):
+                    output_img[h, w, c] = get_adaptive_median(padded_image, h, w, depth, depth, c, max_size)
+        output_img = output_img[depth:h_img + depth, depth:w_img + depth]
+        return np.uint8(output_img)
+</code></pre>
+<ol start="6">
+<li>实现自适应中值滤波。</li>
+</ol>
+<h2 id="c-测量指标文件-metric-py"><a href="#c-测量指标文件-metric-py" class="headerlink" title="c)    测量指标文件 metric.py"></a>c)    测量指标文件 metric.py</h2><ol>
+<li>由于并非任务要求，因此这里使用了库函数。<ul>
+<li>本来想用 sys.modules 调用变量，后来才知道类和函数是存在 sys.modules 里的，变量是存在 locals() 或者 globals() 里。</li>
+</ul>
+</li>
+</ol>
+<pre><code class="python"># The implementation of digital image processing assignment 2.
+# Random Noise and Spatial Filter
+
+# Metrics
+# author: leafy
+# 2022-12-5
+# last_modified: 2022-12-5
+
+from itertools import product
+import math
+import numpy as np
+from skimage.metrics import structural_similarity
+import cv2
+
+
+def mean_squared_error(img1: np.ndarray, img2: np.ndarray) -&gt; float:
+    mse = np.mean((img1 / 1.0 - img2 / 1.0) ** 2)
+    return float(mse)
+
+
+def peak_signal_noise_ratio(mse: float) -&gt; float:
+    if mse &lt; 1.0e-10:
+        return 100
+    return 10 * math.log10(255.0 ** 2 / mse)
+
+
+# Just borrow it from skimage
+# will implement soon(for assignment request)
+def compare(img1, img2):
+    mse = mean_squared_error(img1, img2)
+    psnr = peak_signal_noise_ratio(mse)
+    ssim = structural_similarity(img1, img2, multichannel=True)
+    # print(&#39;PSNR：&#123;&#125;，SSIM：&#123;&#125;，MSE：&#123;&#125;&#39;.format(psnr, ssim, mse))
+    return psnr, ssim, mse
+
+
+if __name__ == &quot;__main__&quot;:
+    for i in range(1, 5):
+        globals()[f&quot;input_image&#123;i&#125;&quot;] = cv2.imread(f&#39;./result/input_image_&#123;i&#125;.png&#39;)
+
+    # Recording gaussian noise images
+    for i in range(1, 5):
+        for types in [&quot;channel&quot;, &quot;full&quot;]:
+            globals()[f&quot;gaussian_img_&#123;types&#125;_&#123;i&#125;&quot;] = cv2.imread(f&#39;./result/gaussian_img_&#123;types&#125;_&#123;i&#125;.png&#39;)
+
+    # recording saltpepper noise images
+    for i in range(1, 5):
+        globals()[f&quot;sp_img_full_&#123;i&#125;&quot;] = cv2.imread(f&#39;./result/sp_img_full_&#123;i&#125;.png&#39;,
+                                                   )
+    for i in range(1, 5):
+        globals()[f&quot;low_sp_img_full_&#123;i&#125;&quot;] = cv2.imread(f&#39;./result/low_sp_img_full_&#123;i&#125;.png&#39;)
+
+    for i in range(1, 5):
+        for f_type, noise in product([&quot;mean&quot;, &quot;median&quot;, &quot;median_adaptive&quot;], [&quot;gaussian&quot;, &quot;sp&quot;, &quot;low_sp&quot;]):
+            # for noise in [&quot;gaussian&quot;, &quot;sp&quot;, &quot;low_sp&quot;]:
+            for types in [&quot;channel&quot;, &quot;full&quot;]:
+                if &quot;sp&quot; in noise:
+                    types = &quot;full&quot;
+                for pad in [&quot;_reflect&quot;, &quot;&quot;]:
+                    print(f&quot;Reading images in ./result/&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;&#123;pad&#125;_&#123;i&#125;.png&quot;)
+                    globals()[f&quot;&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;&#123;pad&#125;_&#123;i&#125;&quot;] = cv2.imread(
+                        f&#39;./result/&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;&#123;pad&#125;_&#123;i&#125;.png&#39;)
+
+    for f_type, noise in product([&quot;mean&quot;, &quot;median&quot;, &quot;median_adaptive&quot;, &quot;no_filter&quot;], [&quot;gaussian&quot;, &quot;sp&quot;, &quot;low_sp&quot;]):
+        for types in [&quot;channel&quot;, &quot;full&quot;]:
+            if &quot;sp&quot; in noise and types == &quot;channel&quot;:
+                continue
+            for pad in [&quot;_reflect&quot;, &quot;&quot;]:
+                cnt_psnr, cnt_ssim, cnt_mse = 0, 0, 0
+                if f_type == &quot;no_filter&quot;:
+                    filt = &quot;&quot;
+                    img = &quot;img_&quot;
+                else:
+                    filt = f_type + &quot;_&quot;
+                    img = &quot;&quot;
+                if f_type == &quot;no_filter&quot; and pad != &quot;&quot;:
+                    continue
+                for i in range(1, 5):
+                    cur_psnr, cur_ssim, cur_mse = compare(globals()[f&quot;input_image&#123;i&#125;&quot;],
+                                                          globals()[f&quot;&#123;filt&#125;&#123;noise&#125;_&#123;img&#125;&#123;types&#125;&#123;pad&#125;_&#123;i&#125;&quot;])
+                    for metric in [&quot;psnr&quot;, &quot;ssim&quot;, &quot;mse&quot;]:
+                        globals()[f&quot;cnt_&#123;metric&#125;&quot;] += globals()[f&quot;cur_&#123;metric&#125;&quot;]
+                cnt_psnr, cnt_ssim, cnt_mse = cnt_psnr / 4, cnt_ssim / 4, cnt_mse / 4
+                print(f&quot;Difference between &#123;filt&#125;&#123;noise&#125;_&#123;img&#125;&#123;types&#125;&#123;pad&#125;.png and input is &quot;
+                      f&quot;\n&#123;cnt_psnr&#125; \n&#123;cnt_ssim&#125; \n&#123;cnt_mse&#125;&quot;)
+</code></pre>
+<ol start="2">
+<li>完成了所有图像的指标测试。</li>
+</ol>
+<h2 id="d-主文件（五个函数及主函数调用）"><a href="#d-主文件（五个函数及主函数调用）" class="headerlink" title="d)    主文件（五个函数及主函数调用）"></a>d)    主文件（五个函数及主函数调用）</h2><pre><code class="python">import os
+from typing import Tuple
+import cv2
+import numpy as np
+import sys
+from itertools import product
+
+from noise import GaussianNoiseGenerator, SaltPepperNoiseGenerator
+from spatial_filter import SpatialFilter
+from metric import compare
+
+from IPython import embed
+
+
+def generate_gaussian_noise(input_img: np.ndarray, mean: float, var: float) -&gt; Tuple[np.ndarray, np.ndarray]:
+  &quot;&quot;&quot;
+  :param:     input_img:      Input image.
+  :param:     mean:           Mean of gaussian noise.
+  :param:     var:            Variance of gaussian noise.
+  :return:    output_image:   Output image with gaussian noise added. output_img, output_img_channel_wise
+  &quot;&quot;&quot;
+  inner_gaussian_noise_generator = GaussianNoiseGenerator()
+  output_img = inner_gaussian_noise_generator.add_all_channel_noise(input_img, mean, var)
+  output_img_channel_wise = inner_gaussian_noise_generator.add_channel_wise_noise(input_img, mean, var)
+  return output_img, output_img_channel_wise
+
+
+def generate_saltpepper_noise(prob_1: float, prob_2: float, input_img: np.ndarray) -&gt; np.ndarray:
+  &quot;&quot;&quot;
+  :param:     prob_1:         prob_1 of saltpepper noise.
+  :param:     prob_2:         prob_2 of saltpepper noise.
+  :param:     input_img:      Input image.
+  :return:    output_image:   Output image with saltpepper noise added.
+  &quot;&quot;&quot;
+  saltpepper_noise_generator = SaltPepperNoiseGenerator()
+  output_img = saltpepper_noise_generator.add_saltpepper_noise(prob_1, prob_2, input_img)
+  return output_img
+
+
+def mean_filter(noised_img: np.ndarray, kernel_size: int = None) -&gt; Tuple[np.ndarray, np.ndarray]:
+  &quot;&quot;&quot;
+  :param:     input_img:      Input image.
+  :param:     kernel_size:    kernel size of filter.
+  :return:    output_image:   Output filtered image. output_img_zero, output_img_reflect
+  &quot;&quot;&quot;
+  sp_filter = SpatialFilter(noised_img)
+  output_img_zero = sp_filter.mean_filter(noised_img, kernel_size=kernel_size, padding_type=&quot;zero&quot;)
+  output_img_reflect = sp_filter.mean_filter(noised_img, kernel_size=kernel_size, padding_type=&quot;reflect&quot;)
+  return output_img_zero, output_img_reflect
+
+
+def median_filter(noised_img: np.ndarray, kernel_size: int = None) -&gt; Tuple[np.ndarray, np.ndarray]:
+  &quot;&quot;&quot;
+  :param:     input_img:      Input image.
+  :param:     kernel_size:    kernel size of filter.
+  :return:    output_image:   Output filtered image. output_img_zero, output_img_reflect
+  &quot;&quot;&quot;
+  sp_filter = SpatialFilter(noised_img)
+  output_img_zero = sp_filter.median_filter(noised_img, kernel_size=kernel_size, padding_type=&quot;zero&quot;)
+  output_img_reflect = sp_filter.median_filter(noised_img, kernel_size=kernel_size, padding_type=&quot;reflect&quot;)
+  return output_img_zero, output_img_reflect
+
+
+def median_adaptive_filter(noised_img: np.ndarray, kernel_size: int = None,
+                         max_size: int = None) -&gt; Tuple[np.ndarray, np.ndarray]:
+  &quot;&quot;&quot;
+  :param:     input_img:      Input image.
+  :param:     kernel_size:    kernel size of filter.
+  :param:     max_size:       Max size of adaptive filter.
+  :return:    output_image:   Output filtered image. output_img_zero, output_img_reflect
+  &quot;&quot;&quot;
+  sp_filter = SpatialFilter(noised_img)
+  output_img_zero = sp_filter.adaptive_median_filter(noised_img, kernel_size=kernel_size,
+                                                     max_size=max_size, padding_type=&quot;zero&quot;)
+  output_img_reflect = sp_filter.adaptive_median_filter(noised_img, kernel_size=kernel_size,
+                                                        max_size=max_size, padding_type=&quot;reflect&quot;)
+  return output_img_zero, output_img_reflect
+</code></pre>
+<ol>
+<li><p>两种噪声的生成。</p>
+</li>
+<li><p>三种滤波结果，同时包括对称填充和零填充。</p>
+</li>
+<li><p>主函数——图像读入与加噪声，添加了高斯噪声、高概率椒盐噪声和低概率椒盐噪声。</p>
+</li>
+</ol>
+<pre><code class="python">def main(test_dir: str = &quot;./test_image&quot;):
+    # Reading images
+    input_images = os.listdir(test_dir)
+    for idx, path in input_images:
+        locals()[f&quot;input_image&#123;idx&#125;&quot;] = cv2.imread(os.path.join(test_dir, path), 1)
+
+    # Recording input images
+    for i in range(1, 5):
+        cv2.imwrite(f&#39;./result/input_image_&#123;i&#125;.png&#39;,
+                    locals()[f&quot;input_image&#123;i&#125;&quot;])
+
+    # Recording gaussian noise images
+    for i in range(1, 5):
+        locals()[f&quot;gaussian_img_full_&#123;i&#125;&quot;], locals()[f&quot;gaussian_img_channel_&#123;i&#125;&quot;] = \
+            generate_gaussian_noise(locals()[f&quot;input_image&#123;i&#125;&quot;], 0, 0.05)
+        for types in [&quot;channel&quot;, &quot;full&quot;]:
+            cv2.imwrite(f&#39;./result/gaussian_img_&#123;types&#125;_&#123;i&#125;.png&#39;,
+                        locals()[f&quot;gaussian_img_&#123;types&#125;_&#123;i&#125;&quot;])
+
+    # recording saltpepper noise images
+    for i in range(1, 5):
+        locals()[f&quot;sp_img_full_&#123;i&#125;&quot;] = generate_saltpepper_noise(0.1, 0.1,
+                                                                 locals()[f&quot;input_image&#123;i&#125;&quot;])
+        cv2.imwrite(f&#39;./result/sp_img_full_&#123;i&#125;.png&#39;,
+                    locals()[f&quot;sp_img_full_&#123;i&#125;&quot;])
+    for i in range(1, 5):
+        locals()[f&quot;low_sp_img_full_&#123;i&#125;&quot;] = generate_saltpepper_noise(0.01, 0.01,
+                                                                     locals()[f&quot;input_image&#123;i&#125;&quot;])
+        cv2.imwrite(f&#39;./result/low_sp_img_full_&#123;i&#125;.png&#39;,
+                    locals()[f&quot;low_sp_img_full_&#123;i&#125;&quot;])
+
+    # Filtering and recording the output images
+    print(locals().keys())
+    for i in range(1, 5):
+        for f_type, noise in product([&quot;mean&quot;, &quot;median&quot;, &quot;median_adaptive&quot;], [&quot;gaussian&quot;, &quot;sp&quot;, &quot;low_sp&quot;]):
+            # for noise in [&quot;gaussian&quot;, &quot;sp&quot;, &quot;low_sp&quot;]:
+            for types in [&quot;channel&quot;, &quot;full&quot;]:
+                if &quot;sp&quot; in noise and types == &quot;channel&quot;:
+                    continue
+                print(f&quot;Generating images &#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;_&#123;i&#125;&quot;)
+                if f_type == &quot;median_adaptive&quot;:
+                    locals()[f&quot;&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;_&#123;i&#125;&quot;], locals()[f&quot;&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;_reflect_&#123;i&#125;&quot;] = \
+                        getattr(sys.modules[__name__], f&quot;&#123;f_type&#125;_filter&quot;)(locals()[f&quot;&#123;noise&#125;_img_&#123;types&#125;_&#123;i&#125;&quot;],
+                                                                           kernel_size=3,
+                                                                           max_size=7)
+                else:
+                    locals()[f&quot;&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;_&#123;i&#125;&quot;], locals()[f&quot;&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;_reflect_&#123;i&#125;&quot;] = \
+                        getattr(sys.modules[__name__], f&quot;&#123;f_type&#125;_filter&quot;)(locals()[f&quot;&#123;noise&#125;_img_&#123;types&#125;_&#123;i&#125;&quot;],
+                                                                           kernel_size=3)
+                for pad in [&quot;_reflect&quot;, &quot;&quot;]:
+                    print(f&quot;Saving images in ./result/&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;&#123;pad&#125;_&#123;i&#125;.png&quot;)
+                    cv2.imwrite(f&#39;./result/&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;&#123;pad&#125;_&#123;i&#125;.png&#39;,
+                                locals()[f&quot;&#123;f_type&#125;_&#123;noise&#125;_&#123;types&#125;&#123;pad&#125;_&#123;i&#125;&quot;])
+
+    for f_type, noise in product([&quot;mean&quot;, &quot;median&quot;, &quot;median_adaptive&quot;, &quot;no_filter&quot;], [&quot;gaussian&quot;, &quot;sp&quot;, &quot;low_sp&quot;]):
+        for types in [&quot;channel&quot;, &quot;full&quot;]:
+            if &quot;sp&quot; in noise and types == &quot;channel&quot;:
+                continue
+            for pad in [&quot;_reflect&quot;, &quot;&quot;]:
+                cnt_psnr, cnt_ssim, cnt_mse = 0, 0, 0
+                if f_type == &quot;no_filter&quot;:
+                    filt = &quot;&quot;
+                    img = &quot;img_&quot;
+                else:
+                    filt = f_type + &quot;_&quot;
+                    img = &quot;&quot;
+                if f_type == &quot;no_filter&quot; and pad != &quot;&quot;:
+                    continue
+                for i in range(1, 5):
+                    cur_psnr, cur_ssim, cur_mse = compare(globals()[f&quot;input_image&#123;i&#125;&quot;],
+                                                          globals()[f&quot;&#123;filt&#125;&#123;noise&#125;_&#123;img&#125;&#123;types&#125;&#123;pad&#125;_&#123;i&#125;&quot;])
+                    for metric in [&quot;psnr&quot;, &quot;ssim&quot;, &quot;mse&quot;]:
+                        globals()[f&quot;cnt_&#123;metric&#125;&quot;] += globals()[f&quot;cur_&#123;metric&#125;&quot;]
+                cnt_psnr, cnt_ssim, cnt_mse = cnt_psnr / 4, cnt_ssim / 4, cnt_mse / 4
+                print(f&quot;Difference between &#123;filt&#125;&#123;noise&#125;_&#123;img&#125;&#123;types&#125;&#123;pad&#125;.png and input is &quot;
+                      f&quot;\n&#123;cnt_psnr&#125; \n&#123;cnt_ssim&#125; \n&#123;cnt_mse&#125;&quot;)
+
+
+if __name__ == &#39;__main__&#39;:
+    # input_image3 = cv2.imread(&#39;test3.jpg&#39;, 1)
+    # a, b = generate_gaussian_noise(input_image3, 0, 0.05)
+    # cv2.imshow(&#39;gaussian_noise&#39;, a)
+    # cv2.imshow(&#39;gaussian_noise_channel&#39;, b)
+    # cv2.waitKey(0)
+    main()
+</code></pre>
+<ol start="4">
+<li>主函数——滤波与指标计算。</li>
+</ol>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2023/03/28/%E4%BA%A4%E5%8F%89%E7%86%B5%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E5%92%8CKL%E6%95%A3%E5%BA%A6/" title="交叉熵损失函数和KL散度"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">Previous: 交叉熵损失函数和KL散度</span></a><a class="button is-default" href="/2022/11/29/Method/" title="类的方法与属性"><span class="has-text-weight-semibold">Next: 类的方法与属性</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="leafy-lee/leafy-lee.github.io" src="https://utteranc.es/client.js" label="Comment" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/leafy-lee"><i class="iconfont icon-github-fill"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--><!-- Google Scholars--><a title="Google Scholar" target="_blank" rel="noopener nofollow" href="//scholar.google.com/citations?user=oYrdW8UAAAAJ&amp;hl=zh-CN&amp;oi=ao"><i class="iconfont icon-graduatecap"></i></a></section><p><span>Copyright ©</span><span> leafy 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/jquery-3.6.1.min.js"></script><script src="/js/jquery-fancybox.min.js"></script><script src="/js/img_zoom.js"></script><script src="/js/post.js"></script></body></html>

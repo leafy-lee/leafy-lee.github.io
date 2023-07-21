@@ -1,0 +1,329 @@
+<!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>类的方法与属性</title><meta name="description" content="The instinct of a man is to pursue everything that flies from him, and to fly from all that pursue him."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><link rel="stylesheet" href="/style/common/jquery.fancybox.min.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="故事的开始来自今天发现本月5号忘记了leetcode每日一题打卡。为了保证本人的第一次月打卡徽章，我打算补打这个卡。很快我发现这是一道并不困难的“困难”题，因此我决定写一个很Coooooooool的函数，题目是这样的：
+
+给你一个以字符串形式表述的 布尔表达式（boolean） expression，返回该式的运算结果。
+有效的表达式需遵循以下约定：
+
+“t”，运算结果为 True
+“f”，运算结果为 False
+“!(expr)”，运算过程为对内部表达式 expr 进行逻辑 非的运算（NOT）
+“&amp;amp;(expr1,expr2,…)”，运算过程为对 2 个或以上内部表达式 expr1, expr2, … 进行逻辑 与的运算（AND）
+“|(expr1,expr2,…)”，运算过程为对 2 个或以上内部.."><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">leafy's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">类的方法与属性</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">类的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#property"><span class="toc-text">@property</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#classmethod"><span class="toc-text">@classmethod</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#staticmethod"><span class="toc-text">@staticmethod</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="toc-text">类的属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#annotations"><span class="toc-text">__annotations__</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setattr"><span class="toc-text">__setattr__</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#getattribute"><span class="toc-text">__getattribute__</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#new-%E4%B8%8E-init"><span class="toc-text">__new__ 与 __init__</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fun-Fact"><span class="toc-text">Fun Fact</span></a></li></ol></div><div class="column is-9"><header class="my-4"></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">类的方法与属性</h1><time class="has-text-grey" datetime="2022-11-29T05:31:08.000Z">2022-11-29</time><article class="mt-2 post-content"><p>故事的开始来自今天发现本月5号忘记了leetcode每日一题打卡。为了保证本人的第一次月打卡徽章，我打算补打这个卡。很快我发现这是一道并不困难的“困难”题，因此我决定写一个很Coooooooool的函数，题目是这样的：</p>
+<blockquote>
+<p>给你一个以字符串形式表述的 布尔表达式（boolean） expression，返回该式的运算结果。</p>
+<p>有效的表达式需遵循以下约定：</p>
+<ul>
+<li>“t”，运算结果为 True</li>
+<li>“f”，运算结果为 False</li>
+<li>“!(expr)”，运算过程为对内部表达式 expr 进行逻辑 非的运算（NOT）</li>
+<li>“&amp;(expr1,expr2,…)”，运算过程为对 2 个或以上内部表达式 expr1, expr2, … 进行逻辑 与的运算（AND）</li>
+<li>“|(expr1,expr2,…)”，运算过程为对 2 个或以上内部表达式 expr1, expr2, … 进行逻辑 或的运算（OR）</li>
+</ul>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/parsing-a-boolean-expression">https://leetcode.cn/problems/parsing-a-boolean-expression</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<p>这个是我写的代码。</p>
+<pre><code class="python">from collections import deque
+
+DEBUG = False
+
+def boolean(x: str) -&gt; bool or str:
+    if x not in &quot;tf&quot;:
+        return x
+    return True if x == &quot;t&quot; else False
+
+class BoolExpression:
+
+    def __repr__(self):
+        return f&quot;A Bool Expression parser&quot;
+
+    def cal_symbol_result(self, x1: bool, grammar_symbol: str, x2: bool = None) -&gt; bool:
+        assert (grammar_symbol in &quot;!|&amp;&quot;)                # calculate in three types of char
+        if DEBUG:
+            print(f&quot;checking &#123;x1&#125;, &#123;x2&#125;&quot;)
+        if grammar_symbol == &quot;!&quot;:
+            return not x1
+        elif grammar_symbol == &quot;&amp;&quot;:
+            return x1 &amp; x2 if x2 != None else x1
+        else:
+            return x1 | x2 if x2 != None else x1
+
+    def parse_bool_expr(self, expression: str) -&gt; bool:
+        # print(expression)
+        grammar_stack = deque()
+        char_stack = deque()
+        for expression_char in expression:              # iter through expression char
+            if DEBUG:
+                print(f&quot;showing &#123;expression_char&#125;, &#123;grammar_stack&#125;, &#123;char_stack&#125;&quot;)
+            if expression_char in &quot;!&amp;|&quot;:                # if char is grammar sign
+                grammar_stack.append(expression_char)
+            elif expression_char == &quot;)&quot;:                # or end of the expression
+                cur_grammar_char = grammar_stack.pop()
+                cur_variable_char = char_stack.pop()
+                cur_result = None
+                while cur_variable_char != &quot;(&quot;:         # iter through all expression need to be calculate
+                    if DEBUG:
+                        print(f&quot;popping &#123;cur_variable_char&#125;, &#123;cur_grammar_char&#125;&quot;)
+                    cur_result = self.cal_symbol_result(cur_variable_char, cur_grammar_char, cur_result)
+                    if DEBUG:
+                        print(f&quot;getting &#123;cur_result&#125;&quot;)
+                    cur_variable_char = char_stack.pop()
+                    if DEBUG:
+                        print(f&quot;popping &#123;cur_variable_char&#125;, remaining &#123;char_stack&#125;&quot;)
+                char_stack.append(cur_result)
+            elif expression_char != &quot;,&quot;:                # or some other chars
+                char_stack.append(boolean(expression_char))
+        # print(char_stack)
+        assert (len(char_stack) == 1)
+        return char_stack[0]
+</code></pre>
+<p>其实我一开始是想把boolean这个函数写进类里的，但是为了省去写self.boolean的调用，我绞尽脑汁回想起了曾经见过的一个装饰器@staticmethod。我清晰地记得似乎这个方法可以不用写self，但很快，事实告诉我并非如此，我依然要使用self.boolean去调用。显然我贫瘠的记忆并不足以支持我继续干想，动手试一试的想法很快涌入了我的脑海。那就去试一试学一学吧，我想。</p>
+<h2 id="类的方法"><a href="#类的方法" class="headerlink" title="类的方法"></a>类的方法</h2><p>因此，今天的内容，就从这里开始。首先我们要提到的是装饰器带来的类方法。凭借我的记忆和一些简单的查找，我找到了三种方法：@property, @classmethod, @staticmethod</p>
+<pre><code class="python">class Solution:
+    &quot;&quot;&quot;
+    This is description which will be showed
+    The class of solution
+    &quot;&quot;&quot;
+    def add(self) -&gt; int:
+        return self.a + self.b
+
+    @property
+    def add1(self) -&gt; int:
+        return self.a + self.b
+
+    @classmethod
+    def add2_1(cls):
+        print(&quot;add2_1&quot;)
+
+    @classmethod
+    def add2(cls) -&gt; str:
+        print(f&quot;self.instance is &#123;cls.__name__&#125;&quot;)
+        print(cls.a)
+        return cls.__name__
+
+    @staticmethod
+    def add3(a: int) -&gt; int:
+        return a + 1
+
+    def __repr__(self):
+        return f&quot;a solution class with &#123;self.a&#125;, &#123;self.b&#125;&quot;
+</code></pre>
+<h3 id="property"><a href="#property" class="headerlink" title="@property"></a>@property</h3><p><strong>@property</strong> 将函数包装为类的属性，这个属性是直接获取属性，使用和类的普通属性完全相同。</p>
+<pre><code class="python">In [7]: Solution.add1
+Out[7]: &lt;property at 0x2812ab37778&gt;
+
+In [8]: s.add1
+Out[8]: 5
+</code></pre>
+<p><strong>个人觉得主要用途是用于在类中创建只读的属性，即将私有属性安全化</strong>，例如本例中，如果我们不希望实例对象可以修改 _add1 属性，则可以在不定义 setattr 的情况下将 add1 变为只读属性。</p>
+<h3 id="classmethod"><a href="#classmethod" class="headerlink" title="@classmethod"></a>@classmethod</h3><p><strong>@classmethod</strong> 将函数变为类的方法，该方法只能调用类的属性，而不能调用实例的属性，因此无法完成 self.a + self.b 的操作，只能使用类的属性</p>
+<pre><code class="python">In [1]: s.add2()
+self.instance is Solution
+&lt;member &#39;a&#39; of &#39;Solution&#39; objects&gt;
+Out[1]: &#39;Solution&#39;
+</code></pre>
+<h3 id="staticmethod"><a href="#staticmethod" class="headerlink" title="@staticmethod"></a>@staticmethod</h3><p><strong>@staticmethod</strong> 确实可以少写self，很遗憾，是在定义的时候，是在定义 add3 时，无需写self，因为它不只是实例的方法，它是类的方法，我们可以随意调用。</p>
+<pre><code class="python">In [3]: s.add3(1)
+Out[3]: 2
+
+In [4]: Solution.add3(1)
+Out[4]: 2
+</code></pre>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>简单看一下这三个函数的区别：</p>
+<pre><code class="python">In [13]: Solution.add
+Out[13]: &lt;function __main__.Solution.add(self) -&gt; int&gt;
+
+In [14]: Solution.add1
+Out[14]: &lt;property at 0x1cf238e7728&gt;
+
+In [15]: Solution.add2
+Out[15]: &lt;bound method Solution.add2 of &lt;class &#39;__main__.Solution&#39;&gt;&gt;
+
+In [16]: Solution.add3
+Out[16]: &lt;function __main__.Solution.add3(a: int) -&gt; int&gt;
+
+----------------------------------------------------------------------------------
+
+In [9]: s.add
+Out[9]: &lt;bound method Solution.add of a solution class with 2, 3&gt;
+
+In [10]: s.add1
+Out[10]: 5
+
+In [11]: s.add2
+Out[11]: &lt;bound method Solution.add2 of &lt;class &#39;__main__.Solution&#39;&gt;&gt;
+
+In [12]: s.add3
+Out[12]: &lt;function __main__.Solution.add3(a: int) -&gt; int&gt;
+</code></pre>
+<h2 id="类的属性"><a href="#类的属性" class="headerlink" title="类的属性"></a>类的属性</h2><p>这一部分我想说的是类的属性，其实也没什么特别难的，可以通过 dir 自己查到类的方法</p>
+<pre><code class="python">In [17]: dir(s)
+Out[17]: 
+[&#39;__annotations__&#39;,
+ &#39;__class__&#39;,
+ &#39;__delattr__&#39;,
+ &#39;__dir__&#39;,
+ &#39;__doc__&#39;,
+ &#39;__eq__&#39;,
+ &#39;__format__&#39;,
+ &#39;__ge__&#39;,
+ &#39;__getattribute__&#39;,
+ &#39;__gt__&#39;,
+ &#39;__hash__&#39;,
+ &#39;__init__&#39;,
+ &#39;__init_subclass__&#39;,
+ &#39;__le__&#39;,
+ &#39;__lt__&#39;,
+ &#39;__module__&#39;,
+ &#39;__name__&#39;,
+ &#39;__ne__&#39;,
+ &#39;__new__&#39;,
+ &#39;__reduce__&#39;,
+ &#39;__reduce_ex__&#39;,
+ &#39;__repr__&#39;,
+ &#39;__setattr__&#39;,
+ &#39;__sizeof__&#39;,
+ &#39;__slots__&#39;,
+ &#39;__str__&#39;,
+ &#39;__subclasshook__&#39;,
+ &#39;_add1&#39;,
+ &#39;a&#39;,
+ &#39;add&#39;,
+ &#39;add1&#39;,
+ &#39;add2&#39;,
+ &#39;add2_1&#39;,
+ &#39;add3&#39;,
+ &#39;b&#39;,
+ &#39;instance&#39;]
+</code></pre>
+<p>这里还是上面这个类，我们添加一些方法的重载。</p>
+<pre><code class="python">class Solution:
+    &quot;&quot;&quot;
+    This is description which will be showed
+    The class of solution
+    &quot;&quot;&quot;
+    __name__: str = &quot;Sub solution&quot;
+    __slots__ = [&quot;a&quot;, &quot;b&quot;, &quot;_add1&quot;]
+    instance = 0
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.instance:
+            cls.instance = super().__new__(cls)
+        return cls.instance
+
+    def __init__(self, a: int, b: int):
+        self.a = a
+        self.b = b
+        self._add1 = 5
+
+    def _in_slots(self, attr) -&gt; bool:
+        for cls in type(self).__mro__:
+            if attr in getattr(cls, &#39;__slots__&#39;, []):
+                return True
+        return False
+
+    def __setattr__(self, attribute: &#39;attribute&#39;, item: int):
+        if attribute == &quot;_add1&quot;:
+            print(&quot;PLEASE DO NOT CHANGE add1&quot;)
+            return
+        if attribute == &quot;a&quot; and item &gt; 100:
+            print(f&quot;self.a do not support assign over 100&quot;)
+        if self._in_slots(attribute):
+            object.__setattr__(self, attribute, item)
+            return
+        # print(&quot;SET ERROR, try for subclass&quot;)
+        raise AttributeError(f&quot;Something has gone wrong. &#123;attribute&#125; may not be assigned&quot;)
+
+    def add(self) -&gt; int:
+        return self.a + self.b
+
+    @property
+    def add1(self) -&gt; int:
+        return self.a + self.b
+
+    @classmethod
+    def add2_1(cls):
+        print(&quot;add2_1&quot;)
+
+    @classmethod
+    def add2(cls) -&gt; str:
+        print(f&quot;self.instance is &#123;cls.__name__&#125;&quot;)
+        print(cls.a)
+        return cls.__name__
+
+    @staticmethod
+    def add3(a: int) -&gt; int:
+        return a + 1
+
+    def __repr__(self):
+        return f&quot;a solution class with &#123;self.a&#125;, &#123;self.b&#125;&quot;
+</code></pre>
+<p>如果我们这里实现了 __slot__ 那么类将不需要 __dict__ 从而可以节省内存，并且固定类的属性。当事先知道类的属性的时候，可以__slots__来节省内存以及获得更快的属性读取。<strong>注意不应当把防止创造__slots__之外的新属性作为使用__slots__的原因，可以使用decorators以及getters，setters来实现属性控制，使类只接受实现的属性。</strong></p>
+<pre><code class="python">In [1]: s.a = 101
+self.a do not support assign over 100
+
+In [2]: s._add1 = 10
+PLEASE DO NOT CHANGE add1
+
+In [3]: s.a = 5
+
+In [4]: s
+Out[4]: a solution class with 5, 3
+
+In [5]: s.a = 4
+
+In [6]: s
+Out[6]: a solution class with 4, 3
+</code></pre>
+<h3 id="annotations"><a href="#annotations" class="headerlink" title="__annotations__"></a>__annotations__</h3><p><strong>这个属性可以看到类的注释，当然函数也有这个属性。</strong></p>
+<pre><code class="python">In [18]: s.__annotations__
+Out[18]: &#123;&#39;__name__&#39;: str&#125;
+
+In [19]: s.__init__.__annotations__
+Out[19]: &#123;&#39;a&#39;: int, &#39;b&#39;: int&#125;
+</code></pre>
+<h3 id="setattr"><a href="#setattr" class="headerlink" title="__setattr__"></a>__setattr__</h3><p><strong>实现了该方法后，在对属性赋值时会调用，因此可以在函数里限制属性赋值。</strong><br>可以禁止不允许的赋值。</p>
+<h3 id="getattribute"><a href="#getattribute" class="headerlink" title="__getattribute__"></a>__getattribute__</h3><p><strong>实现该方法可以对类的方法调用进行额外的包装，例如对类的函数调用实现监听</strong>，详情见：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_36179862/article/details/102829018">python给类的所有方法加上装饰器</a>。</p>
+<blockquote>
+<pre><code class="python">class ChiseAipFace(AipFace):              #AipFace为百度的人脸识别http封装的类。
+    def __getattribute__(self, item):
+    &quot;&quot;&quot;建议对item进行一下判断，不要全局增加&quot;&quot;&quot;
+        ret = super().__getattribute__(item)
+        if type(
+                ret) == &quot;&lt;class &#39;method&#39;&gt;&quot;:  # 类里面的成员分为三种，method（类方法和实例方法），function（实例方法），int,str...（变量成员），具体需要的时候还是通过type进行判断或者直接通过item来判断
+            def res(*args, **kwargs):
+                retu = None
+                t = 0
+                for i in range(10):
+                    if i &gt; 0:
+                        t = time.time()
+                    retu = ret(*args, **kwargs)
+                    if retu[&#39;error_code&#39;] == 18:#主要解决瞬时并发超限的问题，通过随机值将超限的并发随机在之后的一段时间里面进行接口访问。
+                        time.sleep(random.random() * i * 5)
+                    else:
+                        if t:
+                            logger.warning(&quot;接口访问延时18:&quot; + str(time.time() - t) + &quot;,name:&quot; + item)
+                        return retu
+                logger.error(&quot;接口失败18:&quot; + item)
+                return retu
+            return res
+        else:
+            return ret
+</code></pre>
+</blockquote>
+<h3 id="new-与-init"><a href="#new-与-init" class="headerlink" title="__new__ 与 __init__"></a>__new__ 与 __init__</h3><p>new是对类的实例化，因此__new__接收 cls 对象，并实例化后返回实例化的对象；而__init__是给实例化的对象赋予属性，新词接受的是 self 实例属性。</p>
+<p><strong>这里的__new__主要是用于唯一的对象，即一个类同一时刻只能实例化一个对象（例如音乐播放器或垃圾箱）</strong></p>
+<h2 id="Fun-Fact"><a href="#Fun-Fact" class="headerlink" title="Fun Fact"></a>Fun Fact</h2><pre><code class="python">In [2]: type(s)
+Out[2]: __main__.Solution
+
+In [3]: type(type(s))
+Out[3]: type
+
+In [4]: type.__mro__
+Out[4]: (type, object)
+
+In [5]: object.__mro__
+Out[5]: (object,)
+</code></pre>
+<p>type 是创建类（包括它本身）的类，而 object 是创建实例的类，为继承的类提供了内置方法。<br>但是 __mro__ 显示 type 继承了 type 和 object 而 object 继承了 object。</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2022/12/06/DIPAssignment/" title="数字图像处理大作业2——空间滤波"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">Previous: 数字图像处理大作业2——空间滤波</span></a><a class="button is-default" href="/2022/11/25/tricks-in-writing/" title="写代码时记录的小技巧"><span class="has-text-weight-semibold">Next: 写代码时记录的小技巧</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="leafy-lee/leafy-lee.github.io" src="https://utteranc.es/client.js" label="Comment" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/leafy-lee"><i class="iconfont icon-github-fill"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--><!-- Google Scholars--><a title="Google Scholar" target="_blank" rel="noopener nofollow" href="//scholar.google.com/citations?user=oYrdW8UAAAAJ&amp;hl=zh-CN&amp;oi=ao"><i class="iconfont icon-graduatecap"></i></a></section><p><span>Copyright ©</span><span> leafy 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/jquery-3.6.1.min.js"></script><script src="/js/jquery-fancybox.min.js"></script><script src="/js/img_zoom.js"></script><script src="/js/post.js"></script></body></html>
