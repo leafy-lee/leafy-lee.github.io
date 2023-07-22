@@ -1,6 +1,6 @@
 <!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>Baseline阅读与修改</title><meta name="description" content="The instinct of a man is to pursue everything that flies from him, and to fly from all that pursue him."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
 <!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><link rel="stylesheet" href="/style/common/jquery.fancybox.min.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="Baseline部分数据集处理数据分析sizeSet = set()
-for path in train_path:
+for path in trainPath:
     image = nib.load(path)
     imgShape = image.dataobj.shape
     if imgShape not in sizeSet:
@@ -8,9 +8,9 @@ for path in train_path:
 print(sizeSet)
 
 可以发现数据中尺寸总体只有以下几种形式：
-{(168, 168, 82, 1), (128, 128, 47, 1), (256, 256, 207, 1), (256, 256, 81, 1), (400, 400, 109, 1), (128, 128, 540, 1), (128, 128, 63, 1), (.."><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+{(168, 168, 82, 1), (128, 128, 47, 1), (256, 256, 207, 1), (256, 256, 81, 1), (400, 400, 109, 1), (128, 128, 540, 1), (128, 128, 63, 1), (1.."><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
 </head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">leafy's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Baseline阅读与修改</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Baseline%E9%83%A8%E5%88%86"><span class="toc-text">Baseline部分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E5%A4%84%E7%90%86"><span class="toc-text">数据集处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="toc-text">数据分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%BB%BA%E7%AB%8B"><span class="toc-text">模型建立</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#2D-ResNet"><span class="toc-text">2D-ResNet</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3D-ResNet"><span class="toc-text">3D-ResNet</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E9%AA%8C%E8%AF%81"><span class="toc-text">模型训练与验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E4%B8%8E%E6%8F%90%E4%BA%A4"><span class="toc-text">模型预测与提交</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A2%AB%E6%8F%90%E9%97%AE%E5%88%B0%E7%9A%84%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98"><span class="toc-text">被提问到的配置问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Set-ExecutionPolicy"><span class="toc-text">Set-ExecutionPolicy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Jupyter-notebook-%E8%BF%90%E8%A1%8C%E6%97%A0%E5%8F%8D%E5%BA%94%E6%88%96-conda-init-%E5%A4%B1%E8%B4%A5"><span class="toc-text">Jupyter notebook 运行无反应或 conda init 失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GBK-%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98"><span class="toc-text">GBK 编码问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%B0%8FTrick"><span class="toc-text">一些小Trick</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Test-Time-Augment%EF%BC%88TTA%EF%BC%89"><span class="toc-text">Test-Time-Augment（TTA）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95%EF%BC%9AA"><span class="toc-text">附录：A</span></a></li></ol></div><div class="column is-9"><header class="my-4"></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">Baseline阅读与修改</h1><time class="has-text-grey" datetime="2023-07-21T09:09:59.000Z">2023-07-21</time><article class="mt-2 post-content"><h2 id="Baseline部分"><a href="#Baseline部分" class="headerlink" title="Baseline部分"></a>Baseline部分</h2><h3 id="数据集处理"><a href="#数据集处理" class="headerlink" title="数据集处理"></a>数据集处理</h3><h4 id="数据分析"><a href="#数据分析" class="headerlink" title="数据分析"></a>数据分析</h4><pre><code class="python">sizeSet = set()
-for path in train_path:
+for path in trainPath:
     image = nib.load(path)
     imgShape = image.dataobj.shape
     if imgShape not in sizeSet:
@@ -23,30 +23,30 @@ print(sizeSet)
 ...
 
 # 路径获取
-train_path = glob.glob(&#39;./脑PET图像分析和疾病预测挑战赛公开数据/Train/*/*&#39;)
-test_path = glob.glob(&#39;./脑PET图像分析和疾病预测挑战赛公开数据/Test/*&#39;)
-np.random.shuffle(train_path)
-np.random.shuffle(test_path)
+trainPath = glob.glob(&#39;./脑PET图像分析和疾病预测挑战赛公开数据/Train/*/*&#39;)
+testPath = glob.glob(&#39;./脑PET图像分析和疾病预测挑战赛公开数据/Test/*&#39;)
+np.random.shuffle(trainPath)
+np.random.shuffle(testPath)
 
 # 因为图片数量较少，防止反复解码带来时间损失，将解码图片存入
 DATA_CACHE = &#123;&#125;
 class XunFeiDataset(Dataset):
-    def __init__(self, img_path, transform=None):
-        self.img_path = img_path
+    def __init__(self, imgPath, transform=None):
+        self.imgPath = imgPath
         if transform is not None:
             self.transform = transform
         else:
             self.transform = None
     
     def __getitem__(self, index):
-        if self.img_path[index] in DATA_CACHE:
-            img = DATA_CACHE[self.img_path[index]]
+        if self.imgPath[index] in DATA_CACHE:
+            img = DATA_CACHE[self.imgPath[index]]
         else:
             # nib load 读入图片
-            img = nib.load(self.img_path[index]) 
+            img = nib.load(self.imgPath[index]) 
             # dataobj 读为numpy.ndarray，最后一维为灰度图，可以去掉，从而转为二维卷积
             img = img.dataobj[:,:,:, 0]
-            DATA_CACHE[self.img_path[index]] = img
+            DATA_CACHE[self.imgPath[index]] = img
         
         # 随机选择一些通道，防止通道不均，random.choice指变为50个通道，
         # 每个通道都是随机抽取原来img.shape[-1]其中的一个通道得到，可以重复           
@@ -62,17 +62,17 @@ class XunFeiDataset(Dataset):
         ##########################################
         # 注意，这里long()很重要，不然会遇到报错  #
         ##########################################
-        return img,torch.from_numpy(np.array(int(&#39;NC&#39; in self.img_path[index]))).long()
+        return img,torch.from_numpy(np.array(int(&#39;NC&#39; in self.imgPath[index]))).long()
     
     def __len__(self):
-        return len(self.img_path)
+        return len(self.imgPath)
         
 import albumentations as A
 ###########################################
 # 如果使用windows系统，num_workers置0最稳妥#
 ###########################################
 train_loader = torch.utils.data.DataLoader(
-    XunFeiDataset(train_path[:-10],
+    XunFeiDataset(trainPath[:-10],
             A.Compose([
             A.RandomRotate90(),
             A.RandomCrop(120, 120),
@@ -84,7 +84,7 @@ train_loader = torch.utils.data.DataLoader(
 )
 
 val_loader = torch.utils.data.DataLoader(
-    XunFeiDataset(train_path[-10:],
+    XunFeiDataset(trainPath[-10:],
             A.Compose([
             A.RandomCrop(120, 120),
         ])
@@ -92,7 +92,7 @@ val_loader = torch.utils.data.DataLoader(
 )
 
 test_loader = torch.utils.data.DataLoader(
-    XunFeiDataset(test_path,
+    XunFeiDataset(testPath,
             A.Compose([
             A.RandomCrop(128, 128),
             A.HorizontalFlip(p=0.5),
@@ -248,7 +248,7 @@ for _ in range(10):
 ###################################################
 submit = pd.DataFrame(
     &#123;
-        &#39;uuid&#39;: [int(x.split(&#39;\\&#39;)[-1][:-4]) for x in test_path],
+        &#39;uuid&#39;: [int(x.split(&#39;\\&#39;)[-1][:-4]) for x in testPath],
         &#39;label&#39;: pred.argmax(1)
 &#125;)
 submit[&#39;label&#39;] = submit[&#39;label&#39;].map(&#123;1:&#39;NC&#39;, 0: &#39;MCI&#39;&#125;)
@@ -307,7 +307,7 @@ for _ in range(10):
         
 submit = pd.DataFrame(
     &#123;
-        &#39;uuid&#39;: [int(x.split(&#39;/&#39;)[-1].split(&quot;\\&quot;)[-1][:-4]) for x in test_path],
+        &#39;uuid&#39;: [int(x.split(&#39;/&#39;)[-1].split(&quot;\\&quot;)[-1][:-4]) for x in testPath],
         &#39;label&#39;: pred.argmax(1)
 &#125;)
 submit[&#39;label&#39;] = submit[&#39;label&#39;].map(&#123;1:&#39;NC&#39;, 0: &#39;MCI&#39;&#125;)
