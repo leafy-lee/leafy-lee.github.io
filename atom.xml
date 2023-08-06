@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-07-22T05:54:02.207Z</updated>
+  <updated>2023-08-06T14:41:01.757Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>行人身份识别</title>
+    <link href="http://example.com/2023/08/06/%E8%A1%8C%E4%BA%BA%E8%BA%AB%E4%BB%BD%E8%AF%86%E5%88%AB/"/>
+    <id>http://example.com/2023/08/06/%E8%A1%8C%E4%BA%BA%E8%BA%AB%E4%BB%BD%E8%AF%86%E5%88%AB/</id>
+    <published>2023-08-06T08:59:46.000Z</published>
+    <updated>2023-08-06T14:41:01.757Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="1-赛题描述"><a href="#1-赛题描述" class="headerlink" title="1 赛题描述"></a>1 赛题描述</h2><h3 id="1-1-赛题背景"><a href="#1-1-赛题背景" class="headerlink" title="1.1 赛题背景"></a>1.1 赛题背景</h3><p>机器虽然被大量用到农业生产中，但人还是不可或缺的因素。通过农民身份识别，可以真实客观地记录农民的状态，为农场管理和农产品追溯提供真实的客观数据；较之直接存储视频，可以有效地降低存储空间；自动识别也比人工监管，大幅度提高效率，减少人工成本。</p><h3 id="2-2-赛事任务"><a href="#2-2-赛事任务" class="headerlink" title="2.2 赛事任务"></a>2.2 赛事任务</h3><p>农民身份识别需要对农民进行分类，本次大赛提供了中国农业大学实验室视频制成的图像序列。提供了<strong>25名农民</strong>身份，每个身份包含10段视频制成的图像序列，选手需要对图像序列进行预处理，打标签，并对农民进行身份识别。参赛选手先对图像进行预处理，并制作样本，对图像中的农民进行识别。选手需要自行训练模型，并上传自己训练好的模型和权重。</p><p>这里实际上就是图像分类的问题，因为虽然是人物身份识别，但是所有的身份已经确定，仅包含在这25个人之中，因此实际上是图像分类的问题。</p><h3 id="1-4-评价指标"><a href="#1-4-评价指标" class="headerlink" title="1.4 评价指标"></a>1.4 评价指标</h3><p>本模型依据提交的结果文件，采用Macro-F1进行评价，其中Macro-F1的一种定义如下：</p><p><img src="/2023/08/06/%E8%A1%8C%E4%BA%BA%E8%BA%AB%E4%BB%BD%E8%AF%86%E5%88%AB/image-20230806212241289.png" alt="image-20230806212241289"></p><p>在“Training algorithms for linear text classifiers（ Lewis, David D., et al. “Training algorithms for linear text classifiers.” SIGIR. Vol. 96. 1996.）”中，作者指出，第一种方式对错误的分布不太敏感。，Macro-F1应当是所有类中F1-score的平均值，即第二种方式才是Macro-F1的计算方式，因此我们使用第二种计算方式。</p><h2 id="2-Baseline"><a href="#2-Baseline" class="headerlink" title="2 Baseline"></a>2 Baseline</h2><h3 id="1-原baseline阅读"><a href="#1-原baseline阅读" class="headerlink" title="1. 原baseline阅读"></a>1. 原baseline阅读</h3><p>采用预训练Resnet18作为骨架，修改全连接层为25层。（其实这里是分类任务的话是可以引入预训练模型做finetune的，这里我们留到后面再说。）</p><h3 id="2-改进"><a href="#2-改进" class="headerlink" title="2. 改进"></a>2. 改进</h3><h4 id="1-已使用的改进"><a href="#1-已使用的改进" class="headerlink" title="1. 已使用的改进"></a>1. 已使用的改进</h4><ol><li>保存最优模型，防止产生过拟合现象。</li></ol><pre><code class="python">for _  in range(6):    train_loss = train(train_loader, model, criterion, optimizer)    val_acc  = validate(val_loader, model, criterion)    train_acc = validate(train_loader, model, criterion)    print(train_loss, train_acc, val_acc)    if val_acc &gt; best_acc:        best_acc = val_acc        best_dict = model.state_dict()        print(&#39; EPOCH &#123;&#125; Best accuracy is &#123;:0.6f&#125;&#39;.format(_, best_acc))</code></pre><ol start="2"><li><p>采用学习率的梯度下降，在最小值点提供更小的学习率，防止不收敛。之前同学们提到的0.2-0.5突然震荡回0.8就可能是这种情况。这里我的损失收敛到了0.05-0.12左右</p><p>​    <img src="/image-20230806223356737.png" alt="image-20230806223356737"></p></li><li><p>TTA 集成学习的思路较为简单，若某一个预测器件的准确率大于50%，那么很多个这样的预测器对结果投票得出的结果准确率将会更高。类似于模型集成，增加了鲁棒性，在测试时通过各种数据增广，在得到结果后再综合得到输出。</p></li></ol><h4 id="2-准备使用的改进"><a href="#2-准备使用的改进" class="headerlink" title="2.准备使用的改进"></a>2.准备使用的改进</h4><ol><li>因为一共250段视频，可以考虑根据形态关系（站蹲坐立）采用不同的处理。</li><li>换更加有效的模型。</li><li>采用多个模型集成。</li><li>做特征提取和处理，因为这个是分割图像，可以采用一些分割的预训练生成数据集。</li></ol>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;1-赛题描述&quot;&gt;&lt;a href=&quot;#1-赛题描述&quot; class=&quot;headerlink&quot; title=&quot;1 赛题描述&quot;&gt;&lt;/a&gt;1 赛题描述&lt;/h2&gt;&lt;h3 id=&quot;1-1-赛题背景&quot;&gt;&lt;a href=&quot;#1-1-赛题背景&quot; class=&quot;headerlink&quot; </summary>
+      
+    
+    
+    
+    
+    <category term="Datawhale-Related" scheme="http://example.com/tags/Datawhale-Related/"/>
+    
+  </entry>
   
   <entry>
     <title>Baseline阅读与修改</title>
