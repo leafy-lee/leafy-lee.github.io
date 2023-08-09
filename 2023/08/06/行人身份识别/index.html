@@ -17,9 +17,6 @@
 </li>
 </ol>
 <h2 id="3-代码"><a href="#3-代码" class="headerlink" title="3 代码"></a>3 代码</h2><h3 id="1-数据读取"><a href="#1-数据读取" class="headerlink" title="1. 数据读取"></a>1. 数据读取</h3><pre><code class="python"># 数据读取
-import random 
-random.shuffle(train_path)
-print(train_path[:10])
 
 # 训练集
 train_loader = paddle.io.DataLoader(
@@ -61,6 +58,7 @@ test_loader = paddle.io.DataLoader(
 )
 </code></pre>
 <p>观察到这里是固定采用最后一千张作为验证集，因此可能会存在问题，这里我们在数据集开始划分的时候进行随机shuffle，保证数据集的划分更加具有随机性，并且是独立同分布的。</p>
+<p><strong>要注意，shuffle的话需要保证标签一起shuffle，之前改代码的时候遇到了这个问题，改了好久都没反应过来。（</strong></p>
 <h3 id="2-模型建立"><a href="#2-模型建立" class="headerlink" title="2. 模型建立"></a>2. 模型建立</h3><ol>
 <li>保存最优模型，防止产生过拟合现象。</li>
 </ol>
@@ -237,6 +235,11 @@ class XunFeiNet(paddle.nn.Layer):
         x = self.linear(x)
         return x
 </code></pre>
+</li>
+<li><p>防止过拟合的几种方法</p>
+<blockquote>
+<p>早停：即在验证集上的性能不再提升时，停止训练。这样可以防止模型在训练集上过度学习。<br>正则化：在损失函数中加入L1或者L2正则项，防止模型权重过大。<br>Dropout：随机丢弃一些节点的输出，可以增加模型的鲁棒性。<br>数据增强：通过对训练数据进行变换，从而创建新的训练样本，使模型更容易泛化到未见过的数据。<br>使用更小的网络结构：减少模型的复杂度，避免过拟合。</p>
+</blockquote>
 </li>
 <li><p>TTA 集成学习的思路较为简单，若某一个预测器件的准确率大于50%，那么很多个这样的预测器对结果投票得出的结果准确率将会更高。类似于模型集成，增加了鲁棒性，在测试时通过各种数据增广，在得到结果后再综合得到输出。</p>
 </li>
